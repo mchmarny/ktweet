@@ -2,37 +2,34 @@ apiVersion: sources.eventing.knative.dev/v1alpha1
 kind: ContainerSource
 metadata:
   annotations:
-    traffic.sidecar.istio.io/includeOutboundIPRanges: "INCLUDE_OUTBOUND_IPRANGES"
-  name: twitter-test
+    traffic.sidecar.istio.io/includeOutboundIPRanges: "NET_SCOPE"
+  name: twitter-source
 spec:
   args:
-  - --query=QUERY
-  - --stream=true
+  - --query=knative
   env:
-  - name: TWITTER_CONSUMER_KEY
+  - name: T_CONSUMER_KEY
     valueFrom:
       secretKeyRef:
-        key: consumer-key
-        name: twitter-secret
-  - name: TWITTER_CONSUMER_SECRET_KEY
+        key: T_CONSUMER_KEY
+        name: ktweet-secrets
+  - name: T_CONSUMER_SECRET
     valueFrom:
       secretKeyRef:
-        key: consumer-secret-key
-        name: twitter-secret
-  - name: TWITTER_ACCESS_TOKEN
+        key: T_CONSUMER_SECRET
+        name: ktweet-secrets
+  - name: T_ACCESS_TOKEN
     valueFrom:
       secretKeyRef:
-        key: access-token
-        name: twitter-secret
-  - name: TWITTER_ACCESS_SECRET
+        key: T_ACCESS_TOKEN
+        name: ktweet-secrets
+  - name: T_ACCESS_SECRET
     valueFrom:
       secretKeyRef:
-        key: access-secret
-        name: twitter-secret
-  image: us.gcr.io/probable-summer-223122/source-7dd4982354a958712ad81ca4a42243dd@sha256:d783e702e953b5122c47d25ce05576d51cf8d76d40e33c3544c06079cf8dac96
+        key: T_ACCESS_SECRET
+        name: ktweet-secrets
+  image: us.gcr.io/knative-samples/ktweets:latest
   sink:
     apiVersion: eventing.knative.dev/v1alpha1
     kind: Broker
     name: default
-
----

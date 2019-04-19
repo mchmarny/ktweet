@@ -22,6 +22,16 @@ export NET_SCOPE=$(gcloud container clusters describe ${CLUSTER_NAME} --zone=${C
                   | xargs echo | sed -e "s/ /,/")
 ```
 
+End enter it into the  `config/source.yaml` file:
+
+```yaml
+kind: ContainerSource
+metadata:
+  annotations:
+    traffic.sidecar.istio.io/includeOutboundIPRanges: "NET_SCOPE"
+...
+```
+
 ### Twitter API
 
 To configure this event source you will need Twitter API access keys. [Good instructions on how to get them](https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
