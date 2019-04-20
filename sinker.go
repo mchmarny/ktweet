@@ -5,24 +5,17 @@ import (
 	"log"
 	"time"
 
-	ce "github.com/cloudevents/sdk-go"
 	"github.com/dghubble/go-twitter/twitter"
+	ce "github.com/knative/pkg/cloudevents"
 )
 
-func newSinkPoster(targetURI string) (sinker *sinkPoster, err error) {
+func newSinkPoster(sink string) (sinker *sinkPoster, err error) {
 
 	// cloud events
-	ceTransport, err := ce.NewHTTPTransport(
-		ce.WithTarget(targetURI),
-		ce.WithEncoding(ce.HTTPBinaryV02),
-	)
-	if err != nil {
-		log.Fatalf("Error while creating CloudEvents transport: %v\n", err)
-	}
-	ceClient, err := ce.NewClient(ceTransport)
-	if err != nil {
-		log.Fatalf("Error while creating CloudEvents client: %v\n", err)
-	}
+	ceClient := ce.NewClient(sink, ce.Builder{
+		EventType: "com.twitter",
+		Source:    "https://api.twitter.com/1.1/search/tweets.json",
+	})
 
 	s := &sinkPoster{
 		client: ceClient,
@@ -33,7 +26,7 @@ func newSinkPoster(targetURI string) (sinker *sinkPoster, err error) {
 }
 
 type sinkPoster struct {
-	client ce.Client
+	client *ce.Client
 }
 
 func (s *sinkPoster) post(ctx context.Context, t *twitter.Tweet) error {
@@ -46,21 +39,9 @@ func (s *sinkPoster) post(ctx context.Context, t *twitter.Tweet) error {
 		eventTime = time.Now()
 	}
 
-	e := ce.NewEvent("0.2")
-	e.SetSpecVersion("0.2")
-	e.SetID(t.IDStr)
-	e.SetTime(eventTime)
-	e.SetType("com.twitter")
-	e.SetSource("https://api.twitter.com/1.1/search/tweets.json")
-	e.SetDataContentType("application/json")
-	e.SetData(t)
-
-	result, err := s.client.Send(ctx, e)
-
-	if result != nil {
-		log.Printf("Result: %v", result)
-	}
-
-	return err
+	return s.client.Send(t, ce.V01EventContext{
+		EventID:   t.IDStr,
+		EventTime: eventTime,
+	})
 
 }
