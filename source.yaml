@@ -6,8 +6,7 @@ metadata:
   name: twitter-source
 spec:
   args:
-  - --query=report
-  - --sink=default-broker.demo.svc.cluster.local
+  - --query=knative
   env:
   - name: RELEASE
     value: "v0.1.3"
@@ -31,7 +30,7 @@ spec:
       secretKeyRef:
         key: T_ACCESS_SECRET
         name: ktweet-secrets
-  image: gcr.io/s9-demo/ktweet:0.1.6
+  image: gcr.io/s9-demo/ktweet:0.1.7
   sink:
     apiVersion: eventing.knative.dev/v1alpha1
     kind: Broker
