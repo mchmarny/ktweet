@@ -30,12 +30,12 @@ mod:
 image: mod
 	gcloud builds submit \
 		--project ${GCP_PROJECT} \
-		--tag gcr.io/${GCP_PROJECT}/ktweet
+		--tag gcr.io/${GCP_PROJECT}/ktweet:0.1.5
 
 sample: mod
 	gcloud builds submit \
 		--project knative-samples \
-		--tag gcr.io/knative-samples/ktweet:0.1.1
+		--tag gcr.io/knative-samples/ktweet:0.1.5
 
 # DEPLOYMENT
 

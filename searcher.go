@@ -2,53 +2,66 @@ package main
 
 import (
 	"log"
+	"os"
+	"context"
 
 	"github.com/dghubble/go-twitter/twitter"
+	"github.com/dghubble/oauth1"
 )
 
-func runSearcher(client *twitter.Client,
-	query string,
-	handler func(*twitter.Tweet) error,
-	stop <-chan struct{}) {
-	searcher := &searcher{
-		client:  client,
-		query:   query,
-		handler: handler,
-		stop:    stop,
+var (
+	consumerKey    = mustGetEnvVar("T_CONSUMER_KEY", "")
+	consumerSecret = mustGetEnvVar("T_CONSUMER_SECRET", "")
+	accessToken    = mustGetEnvVar("T_ACCESS_TOKEN", "")
+	accessSecret   = mustGetEnvVar("T_ACCESS_SECRET", "")
+)
+
+func search(ctx context.Context, query, sink string, stop <-chan struct{}) {
+
+	// twitter client config
+	config := oauth1.NewConfig(consumerKey, consumerSecret)
+	token := oauth1.NewToken(accessToken, accessSecret)
+	httpClient := config.Client(oauth1.NoContext, token)
+	twClient := twitter.NewClient(httpClient)
+
+	sinker, err := newSinkPoster(sink)
+	if err != nil {
+		log.Fatalf("Error getting sinker: %v", err)
 	}
-	searcher.run()
-	log.Println("Twitter stream started...")
-}
-
-type searcher struct {
-	client  *twitter.Client
-	query   string
-	handler func(*twitter.Tweet) error
-	stop    <-chan struct{}
-}
-
-func (s *searcher) run() {
 
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(t *twitter.Tweet) {
 		log.Printf("Got tweet: %s\n", t.IDStr)
-		if err := s.handler(t); err != nil {
+		if err := sinker.post(ctx, t); err != nil {
 			log.Printf("Error on tweet handle: %v\n", err)
 		}
 	}
 
 	params := &twitter.StreamFilterParams{
-		Track:         []string{s.query},
+		Track:         []string{query},
 		StallWarnings: twitter.Bool(true),
 		Language:      []string{"en"},
 	}
 
-	stream, err := s.client.Streams.Filter(params)
+	stream, err := twClient.Streams.Filter(params)
 	if err != nil {
 		log.Fatalf("Error on filter create: %v\n", err)
 		return
 	}
 
-	log.Printf("Starting tweet streamming for: %s\n", s.query)
+	log.Printf("Starting tweet streamming for: %s\n", query)
 	go demux.HandleChan(stream.Messages)
+
+}
+
+func mustGetEnvVar(key, fallbackValue string) string {
+	if val, ok := os.LookupEnv(key); ok {
+		return val
+	}
+
+	if fallbackValue == "" {
+		panic("Required env var not set: " + key)
+	}
+
+	return fallbackValue
 }
