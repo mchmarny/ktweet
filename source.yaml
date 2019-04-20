@@ -2,11 +2,11 @@ apiVersion: sources.eventing.knative.dev/v1alpha1
 kind: ContainerSource
 metadata:
   annotations:
-    traffic.sidecar.istio.io/includeOutboundIPRanges: "NET_SCOPE"
+    # traffic.sidecar.istio.io/includeOutboundIPRanges: "NET_SCOPE"
   name: twitter-source
 spec:
   args:
-  - --query=knative
+  - --query=report
   env:
   - name: T_CONSUMER_KEY
     valueFrom:
@@ -28,7 +28,7 @@ spec:
       secretKeyRef:
         key: T_ACCESS_SECRET
         name: ktweet-secrets
-  image: us.gcr.io/knative-samples/ktweets:latest
+  image: gcr.io/s9-demo/ktweet:latest
   sink:
     apiVersion: eventing.knative.dev/v1alpha1
     kind: Broker

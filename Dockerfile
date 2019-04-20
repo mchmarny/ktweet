@@ -1,5 +1,5 @@
 # BUILD
-FROM golang:1.12-stretch as builder
+FROM golang:latest as builder
 
 # copy
 WORKDIR /src/

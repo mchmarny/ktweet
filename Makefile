@@ -12,6 +12,15 @@ all: test image
 test:
 	go test ./... -v
 
+# CONFIG
+
+secret:
+	kubectl create secret generic ktweet-secrets -n demo \
+		--from-literal=T_CONSUMER_KEY=${T_CONSUMER_KEY} \
+		--from-literal=T_CONSUMER_SECRET=${T_CONSUMER_SECRET} \
+		--from-literal=T_ACCESS_TOKEN=${T_ACCESS_TOKEN} \
+		--from-literal=T_ACCESS_SECRET=${T_ACCESS_SECRET}
+
 # BUILD
 
 mod:
@@ -21,12 +30,12 @@ mod:
 image: mod
 	gcloud builds submit \
 		--project ${GCP_PROJECT} \
-		--tag gcr.io/${GCP_PROJECT}/kuser
+		--tag gcr.io/${GCP_PROJECT}/ktweet
 
 sample: mod
 	gcloud builds submit \
 		--project knative-samples \
-		--tag gcr.io/knative-samples/kuser
+		--tag gcr.io/knative-samples/ktweet:0.1.1
 
 # DEPLOYMENT
 
