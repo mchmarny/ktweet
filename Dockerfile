@@ -1,8 +1,8 @@
 # BUILD
-FROM golang:latest as build
+FROM golang:1.12-stretch as builder
 
 # copy
-WORKDIR /src
+WORKDIR /src/
 COPY . /src/
 
 # build
@@ -10,13 +10,12 @@ ENV GO111MODULE=on
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -a -tags netgo \
     -ldflags '-w -extldflags "-static"' \
-    -mod vendor -v -o ktweet
-
+    -mod vendor \
+    -o ktweet
 
 # CERTS
 FROM alpine:latest as certs
 RUN apk --update add ca-certificates
-
 
 # RUN
 FROM scratch
