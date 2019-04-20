@@ -22,13 +22,13 @@ export NET_SCOPE=$(gcloud container clusters describe ${CLUSTER_NAME} --zone=${C
                   | xargs echo | sed -e "s/ /,/")
 ```
 
-End enter it into the  `config/source.yaml` file:
+End enter it into the  `config/source.yaml` file in stead of `10.12.0.0/14,10.15.240.0/20`:
 
 ```yaml
 kind: ContainerSource
 metadata:
   annotations:
-    traffic.sidecar.istio.io/includeOutboundIPRanges: "NET_SCOPE"
+    traffic.sidecar.istio.io/includeOutboundIPRanges: "10.12.0.0/14,10.15.240.0/20"
 ...
 ```
 
