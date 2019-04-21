@@ -53,7 +53,7 @@ kubectl create secret generic ktweet-secrets -n demo \
 ## Run
 
 To launch `ktweet` event source just define the Twitter search query in the `config/source.yaml`.
-For example, to have the `ktweets` produce events for matching the Twitter search for the term `Knative` your
+For example, to have the `ktweet` produce events for matching the Twitter search for the term `Knative` your
 `config/source.yaml` would look like this:
 
 ```yaml
@@ -72,9 +72,9 @@ kubectl apply -f config/source.yaml -n demo
 
 ### Logs
 
-Once you know there are some tweets matching your search you might have to wait few seconds for `ktweets`
+Once you know there are some tweets matching your search you might have to wait few seconds for `ktweet`
 fetch it and you should see it in your target service
 
 ```shell
-kubectl -l 'serving.knative.dev/service=twitter-viewer' logs -c user-container
+kubectl logs -l eventing.knative.dev/source=twitter-source -n demo -c source
 ```
