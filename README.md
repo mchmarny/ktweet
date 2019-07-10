@@ -6,36 +6,9 @@ Simple Twitter event source implementation for [Knative Eventing](http://github.
 
 ## Setup
 
-### Istio Mesh
-
-> NOte, Until Istio 1.1 you'll need to annotate the
-> twitter source with the `traffic.sidecar.istio.io/includeOutboundIPRanges`
-> to ensure the source can emit events into the mesh.
-
-To configure [outbound network access](https://github.com/knative/docs/blob/master/docs/serving/outbound-network-access.md) you will need to determine the IP range of your cluster and capture it into
-your `NET_SCOPE` variable.
-
-```shell
-export NET_SCOPE=$(gcloud container clusters describe ${CLUSTER_NAME} --zone=${CLUSTER_ZONE} \
-                  | grep -e clusterIpv4Cidr -e servicesIpv4Cidr \
-                  | sed -e "s/clusterIpv4Cidr://" -e "s/servicesIpv4Cidr://" \
-                  | xargs echo | sed -e "s/ /,/")
-```
-
-End enter it into the  `config/source.yaml` file in stead of `10.12.0.0/14,10.15.240.0/20`:
-
-```yaml
-kind: ContainerSource
-metadata:
-  annotations:
-    traffic.sidecar.istio.io/includeOutboundIPRanges: "10.12.0.0/14,10.15.240.0/20"
-...
-```
-
 ### Twitter API
 
 To configure this event source you will need Twitter API access keys. [Good instructions on how to get them](https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
-
 
 
 ### Knative Secret
@@ -67,7 +40,7 @@ spec:
 When done editing, just apply into your Knative cluster:
 
 ```shell
-kubectl apply -f config/source.yaml -n demo
+kubectl apply -f source.yaml -n demo
 ```
 
 ### Logs

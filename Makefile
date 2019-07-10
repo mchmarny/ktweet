@@ -29,13 +29,8 @@ mod:
 
 image: mod
 	gcloud builds submit \
-		--project ${GCP_PROJECT} \
-		--tag gcr.io/${GCP_PROJECT}/ktweet:0.1.8
-
-sample: mod
-	gcloud builds submit \
-		--project knative-samples \
-		--tag gcr.io/knative-samples/ktweet:0.1.8
+		--project cloudylabs-public \
+		--tag gcr.io/cloudylabs-public/ktweet:0.1.10
 
 # DEPLOYMENT
 

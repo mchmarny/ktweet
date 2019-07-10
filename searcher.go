@@ -1,9 +1,9 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
-	"context"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
