@@ -30,7 +30,7 @@ mod:
 image: mod
 	gcloud builds submit \
 		--project cloudylabs-public \
-		--tag gcr.io/cloudylabs-public/ktweet:0.1.10
+		--tag gcr.io/cloudylabs-public/ktweet:0.1.11
 
 # DEPLOYMENT
 

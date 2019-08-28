@@ -40,7 +40,6 @@ func search(ctx context.Context, query, sink string, stop <-chan struct{}) {
 	params := &twitter.StreamFilterParams{
 		Track:         []string{query},
 		StallWarnings: twitter.Bool(true),
-		Language:      []string{"en"},
 	}
 
 	stream, err := twClient.Streams.Filter(params)
